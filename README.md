@@ -68,6 +68,8 @@ OPEN URL($path;"safari")
 
 ### Modifications
 
+[Graph_0_Template.svg](https://github.com/miyako/4d-tips-custom-graph-template/blob/master/custom.4dbase/Resources/GraphTemplates/Graph_0_Template.svg)
+
 #96 don't trim the size of array
 
 ```
