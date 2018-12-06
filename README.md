@@ -65,3 +65,44 @@ WRITE PICTURE FILE($path;$graph)
 OPEN URL($path;"safari")
 
 ```
+
+### Modifications
+
+#96 don't trim the size of array
+
+```
+//If ($nbValues>8)
+//	DELETE FROM ARRAY:C228($yValuesArrPtr{1}->;9;100000)
+//	$nbValues:=8
+//End if
+```
+
+#246: grow the ``$barColors`` array to support more than 8 values
+
+```
+ARRAY TEXT:C222($barColors;8)
+$barColors{1}:="rgb(0,178,195)"
+$barColors{2}:="rgb(255,195,56)"
+$barColors{3}:="rgb(87,62,130)"
+$barColors{4}:="rgb(79,168,57)"
+$barColors{5}:="rgb(217,87,0)"
+$barColors{6}:="rgb(29,157,242)"
+$barColors{7}:="rgb(181,207,50)"
+$barColors{8}:="rgb(212,58,38)"
+
+For ($i;9;$nbValues)
+	APPEND TO ARRAY:C911($barColors;$barColors{(($i-1)%8)+1})
+End for
+```
+
+#261, #323: don't assume array size=``8``
+
+```
+ARRAY TEXT:C222($newBarColors;Size of array:C274($barColors))
+ARRAY TEXT:C222($newBarColors;Size of array:C274($barColors))
+```
+
+```
+ARRAY TEXT:C222($legendLabels;Size of array($barColors))
+ARRAY TEXT:C222($legendLabels;Size of array($barColors))
+```
