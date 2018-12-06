@@ -7,14 +7,11 @@ GRAPHコマンドのカスタマイズ
 
 ```
 $usePHT:=True  //PROCESS 4D TAGS
-$usePHT:=False  //GRAPH
-
-  //32-bit
-  //$usePHT:=not(Version type?? 1)
+  //$usePHT:=False  //GRAPH
 
 C_PICTURE($graph)
 
-$count:=18
+$count:=16
 
 ARRAY TEXT($labels;0)
 ARRAY REAL($values;$count)
@@ -37,6 +34,7 @@ If ($usePHT)
 	OB SET ARRAY($graphValues;"yValues";$yValues)
 	
 	$graphParameters:=New object("graphType";7)
+	OB SET ARRAY($graphParameters;"legendLabels";$labels)
 	
 	$templatePath:=Get 4D folder(Current resources folder)+"GraphTemplates"+Folder separator+"Graph_0_Template.svg"
 	$template:=Document to text($templatePath;"utf-8")
@@ -45,7 +43,7 @@ If ($usePHT)
 	$template:=$template+Document to text($templatePath;"utf-8")
 	
 	PROCESS 4D TAGS($template;$template;$graphValues;$graphParameters)
-		
+	
 	$dom:=DOM Parse XML variable($template)
 	SVG EXPORT TO PICTURE($dom;$graph;Own XML data source)
 	
@@ -63,7 +61,6 @@ $path:=$path+"graph.svg"
 WRITE PICTURE FILE($path;$graph)
 
 OPEN URL($path;"safari")
-
 ```
 
 ### Modifications
