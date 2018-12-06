@@ -92,10 +92,10 @@ If (OB Is defined:C1231($graphParameters;"graphType"))
 	$graphType:=OB Get:C1224($graphParameters;"graphType")
 	If ($graphType=7)
 		$nbSeries:=1
-		If ($nbValues>8)
+		//If ($nbValues>8)
 			//DELETE FROM ARRAY:C228($yValuesArrPtr{1}->;9;100000)
 			//$nbValues:=8
-		End if
+		//End if
 	End if
 End if
 
@@ -243,7 +243,7 @@ Else
 	$BulletRadius:=12
 End if
 
-ARRAY TEXT:C222($barColors;10)
+ARRAY TEXT:C222($barColors;8)
 $barColors{1}:="rgb(0,178,195)"
 $barColors{2}:="rgb(255,195,56)"
 $barColors{3}:="rgb(87,62,130)"
@@ -252,8 +252,6 @@ $barColors{5}:="rgb(217,87,0)"
 $barColors{6}:="rgb(29,157,242)"
 $barColors{7}:="rgb(181,207,50)"
 $barColors{8}:="rgb(212,58,38)"
-$barColors{9}:="rgb(181,207,50)"
-$barColors{10}:="rgb(212,58,38)"
 
 For ($i;9;$nbValues)
 	APPEND TO ARRAY:C911($barColors;$barColors{(($i-1)%8)+1})
