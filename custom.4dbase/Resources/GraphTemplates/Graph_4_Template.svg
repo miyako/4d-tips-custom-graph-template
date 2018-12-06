@@ -1,0 +1,61 @@
+﻿<!--#4DCODE
+$rectRx:=2
+$rectRy:=2
+$svgRect:="<rect x='0' y='0' height='"+String:C10($bulletHeight;"&xml")+"' width='"+String:C10($bulletWidth;"&xml")+"' rx='"+String:C10($RectRx;"&xml")+"' ry='"+String:C10($RectRy;"&xml")+"'"
+
+$svg:="<g style='clip-path: url(#ID_backgroundClipPath)'>"
+
+$svg:=$svg+"<g filter='none' stroke-width='"+String:C10($lineWidth;"&xml")+"' stroke-opacity='1'>"
+For ($serie;1;$NbSeries)
+	
+	$svg:=$svg+"<g id='ID_graph_"+String:C10($serie)+"' stroke='"+$barColors{$serie}+"'>"
+	For ($value;2;$NbValues)
+		If ($xProp)
+			$X1:=$GraphX1+$_xAxisPropPositions{$value-1}
+			$X2:=$GraphX1+$_xAxisPropPositions{$value}
+		Else 
+			$X1:=$GraphX1+(($value-2)*$blockWidth)+($blockWidth/2)
+			$X2:=$GraphX1+(($value-1)*$blockWidth)+($blockWidth/2)
+		End if 
+		$Y1:=Round:C94($yZeroAxis-($yValuesArrPtr{$serie}->{$value-1}*$yScale);2)
+		$Y2:=Round:C94($yZeroAxis-($yValuesArrPtr{$serie}->{$value}*$yScale);2)
+		$svg:=$svg+"<line fill-opacity='1' x1='"+String:C10($X1;"&xml")+"' x2='"+String:C10($X2;"&xml")+"' y1='"+String:C10($Y1;"&xml")+"' y2='"+String:C10($Y2;"&xml")+"'/>"
+	End for 
+	$svg:=$svg+"</g>"
+	
+End for 
+$svg:=$svg+"</g>"
+
+$svg:=$svg+"<g filter='none' opacity='1' stroke='none' stroke-opacity='1' stroke-width='0'>"
+
+For ($serie;1;$NbSeries)
+	$svg:=$svg+"<g fill='"+$barColors{$serie}+"' id='ID_bullet_"+String:C10($serie)+"'>"
+	For ($value;1;$NbValues)
+		If ($xProp)
+			$TranslateX:=$GraphX1+$_xAxisPropPositions{$value}-($bulletWidth/2)
+		Else 
+			$TranslateX:=$GraphX1+(($value-1)*$blockWidth)+($blockWidth/2)-($bulletWidth/2)
+		End if 
+		$TranslateY:=Round:C94($yZeroAxis-($yValuesArrPtr{$serie}->{$value}*$yScale)-($bulletHeight/2);2)
+		$Translate:="translate("+String:C10($TranslateX;"&xml")+","+String:C10($TranslateY;"&xml")+")"
+		
+		$svg:=$svg+"<g transform='"+$Translate+"'>"
+		$svg:=$svg+$svgRect+" fill-opacity='1'/>"
+		$svg:=$svg+$svgRect+" fill='url(#WhiteGradient)'/>"
+		$svg:=$svg+$svgRect+" fill-opacity='0.4' filter='url(#SaturateMinus)'/>"
+		$svg:=$svg+$svgRect+" fill='url(#BlackGradient)'/>"
+		$svg:=$svg+"</g>"
+		
+	End for 
+	$svg:=$svg+"</g>"
+End for 
+$svg:=$svg+"</g>"
+
+$svg:=$svg+"</g>"  //END CLIPPATH
+$svg:=Replace string:C233($svg;"4DEVAL";"xxxx")
+-->
+
+<!--4DHTML $svg-->
+
+</g>
+</svg>

@@ -1,0 +1,39 @@
+﻿	<!--#4DCODE
+	$svg:="<g style='clip-path: url(#ID_backgroundClipPath)'>"
+
+	For ($serie;1;$NbSeries)
+
+		$svg:=$svg+"<g fill='"+$barColors{$serie}+"' filter='None' id='ID_graph_"+String:C10($serie)+"' opacity='1' stroke='none' stroke-opacity='1' stroke-width='0'>"
+
+		$x:=$GraphX1
+		$y:=$yZeroAxis
+		$points:=String:C10($x;"&xml")+" "+String:C10($y;"&xml")+" "
+
+		For ($value;1;$NbValues)
+
+			If ($xProp)
+				$x:=Round:C94($GraphX1+$_xAxisPropPositions{$value};2)
+			Else 
+				$x:=Round:C94($GraphX1+(($value-1)*$blockWidth);2)
+			End if 
+			$y:=Round:C94($yZeroAxis-($yValuesArrPtr{$serie}->{$value}*$yScale);2)
+			$points:=$points+String:C10($x;"&xml")+" "+String:C10($y;"&xml")+" "
+		End for 
+
+		$x:=$GraphX2
+		$y:=$yZeroAxis
+		$points:=$points+String:C10($x;"&xml")+" "+String:C10($y;"&xml")
+
+		$svg:=$svg+"<polyline  fill-opacity='0.7' points='"+$points+"'/>"
+
+		$svg:=$svg+"</g>"
+	End for 
+
+	$svg:=$svg+"</g>"  //END CLIPPATH
+	$svg:=Replace string:C233($svg;"4DEVAL";"xxxx")
+	-->
+	
+	<!--4DHTML $svg-->
+	
+	</g>
+</svg>

@@ -1,0 +1,272 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" id="ID_svg" viewBox="0 0 710 624" viewport-fill="none" viewport-fill-opacity="1" xmlns:exsl4D="http://www.4D.com" xmlns:gFunc="http://gFunc" xmlns:math="http://exslt.org/math" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <!--gradient styles-->
+
+  <defs>
+    <filter id="soft_blur">
+      <feGaussianBlur in="SourceGraphic" result="BlurAlpha" stdDeviation="1"/>
+    </filter>
+    <filter id="pastel">
+      <feGaussianBlur in="SourceAlpha" result="blur" stdDeviation="2"/>
+      <feOffset dx="6" dy="6" in="blur" result="offsetBlur"/>
+      <feComposite in="SourceGraphic" in2="offsetBlur" operator="in" result="specOut"/>
+    </filter>
+    <filter id="blur_shadow">
+      <feGaussianBlur in="SourceAlpha" result="blur" stdDeviation="3"/>
+      <feOffset dx="4" dy="2" in="blur" result="offsetBlur"/>
+      <feBlend in="SourceGraphic" in2="offsetBlur" mode="normal"/>
+    </filter>
+    <filter filterUnits="objectBoundingBox" id="Shadow">
+      <feGaussianBlur in="SourceAlpha" result="flou" stdDeviation="0"/>
+      <feColorMatrix in="SourceAlpha" result="flouBlue" type="matrix" values=" 0 0 0 0 0                      0 0 0 0 0                     0 0 0 0 0                      0 0 0 0.3 0"/>
+      <feOffset dx="4" dy="4" in="flouBlue" result="flouDecalage"/>
+      <feBlend in="SourceGraphic" in2="flouDecalage" mode="normal"/>
+    </filter>
+    <filter filterUnits="objectBoundingBox" height="100%" id="SaturateMinus" width="100%" x="0%" y="0%">
+      <feColorMatrix in="SourceGraphic" type="saturate" values="0.5"/>
+    </filter>
+    <filter filterUnits="objectBoundingBox" height="100%" id="SaturatePlus" width="100%" x="0%" y="0%">
+      <feColorMatrix in="SourceGraphic" type="saturate" values="1.4"/>
+    </filter>
+    <linearGradient id="BlackGradient">
+      <stop offset="0%" style="stop-color:rgb(0,0,0); stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:rgb(0,0,0); stop-opacity:0.1"/>
+    </linearGradient>
+    <linearGradient id="WhiteGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+      <stop offset="0%" style="stop-color:rgb(255,255,255); stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:rgb(255,255,255);stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="WhiteBlackGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+      <stop offset="0%" style="stop-color:rgb(255,255,255); stop-opacity:0.15"/>
+      <stop offset="100%" style="stop-color:rgb(0,0,0);stop-opacity:0.15"/>
+    </linearGradient>
+    <linearGradient id="Black0Black1Gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgb(0,0,0); stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:rgb(0,0,0);stop-opacity:0.05"/>
+    </linearGradient>
+  </defs>
+
+  <!--global stroke and font styles-->
+
+  <g id="ID_globals" style="fill:black;stroke:none;font-family:Arial;font-size:12px;font-weight:normal;font-style:normal;text-decoration:none;shape-rendering:crispEdges">
+    <!--draw title-->
+    <!--********************************draw graph background********************************-->
+    <rect fill="rgb(168,168,168)" height="600" id="ID_background_shadow" opacity="1" rx="10" ry="10" stroke="none" transform="translate(1,1)" visibility="visible" width="600" x="12" y="12"/>
+    <g fill="rgb(229,229,229)" id="ID_background" opacity="1" stroke="none" visibility="visible">
+      <rect height="600" rx="10" ry="10" stroke="none" width="600" x="12" y="12"/>
+      <rect fill="url(#Black0Black1Gradient)" height="600" rx="10" ry="10" stroke="none" width="600" x="12" y="12"/>
+    </g>
+    <clipPath id="ID_backgroundClipPath">
+      <rect height="601" rx="10" ry="10" width="601" x="11" y="11"/>
+    </clipPath>
+    <g style="clip-path: url(#ID_backgroundClipPath)"><!--******************************** draw Y grid lines******************************** (Horizontal lines)--><!--********************************draw X grid lines******************************** (Vertical lines)--></g>
+    <!--******************************** draw legend ***********************************-->
+    <g filter="none" id="ID_legend" transform="translate(624,12)" visibility="visible">
+      <!--draw legend border-->
+      <rect fill="rgb(168,168,168)" fill-opacity="1" height="250" id="ID_legend_border_shadow" rx="10" ry="10" stroke="none" transform="translate(1,1)" width="62" x="0" y="0"/>
+      <rect fill="rgb(229,229,229)" fill-opacity="1" height="250" id="ID_legend_border" rx="10" ry="10" stroke="none" stroke-width="0" width="62" x="0" y="0"/>
+      <!--draw legend bullets-->
+      <g id="ID_legend_bullets" stroke="none">
+        <g fill="rgb(0,178,195)" id="ID_legend_1">
+          <rect height="20" rx="3" ry="3" width="20" x="10" y="10"/>
+          <rect fill="url(#WhiteBlackGradient)" height="20" rx="3" ry="3" width="20" x="10" y="10"/>
+          <rect fill-opacity="0.3" filter="url(#SaturateMinus)" height="20" rx="3" ry="3" width="20" x="10" y="10"/>
+        </g>
+        <g fill="rgb(255,195,56)" id="ID_legend_2">
+          <rect height="20" rx="3" ry="3" width="20" x="10" y="40"/>
+          <rect fill="url(#WhiteBlackGradient)" height="20" rx="3" ry="3" width="20" x="10" y="40"/>
+          <rect fill-opacity="0.3" filter="url(#SaturateMinus)" height="20" rx="3" ry="3" width="20" x="10" y="40"/>
+        </g>
+        <g fill="rgb(87,62,130)" id="ID_legend_3">
+          <rect height="20" rx="3" ry="3" width="20" x="10" y="70"/>
+          <rect fill="url(#WhiteBlackGradient)" height="20" rx="3" ry="3" width="20" x="10" y="70"/>
+          <rect fill-opacity="0.3" filter="url(#SaturateMinus)" height="20" rx="3" ry="3" width="20" x="10" y="70"/>
+        </g>
+        <g fill="rgb(79,168,57)" id="ID_legend_4">
+          <rect height="20" rx="3" ry="3" width="20" x="10" y="100"/>
+          <rect fill="url(#WhiteBlackGradient)" height="20" rx="3" ry="3" width="20" x="10" y="100"/>
+          <rect fill-opacity="0.3" filter="url(#SaturateMinus)" height="20" rx="3" ry="3" width="20" x="10" y="100"/>
+        </g>
+        <g fill="rgb(217,87,0)" id="ID_legend_5">
+          <rect height="20" rx="3" ry="3" width="20" x="10" y="130"/>
+          <rect fill="url(#WhiteBlackGradient)" height="20" rx="3" ry="3" width="20" x="10" y="130"/>
+          <rect fill-opacity="0.3" filter="url(#SaturateMinus)" height="20" rx="3" ry="3" width="20" x="10" y="130"/>
+        </g>
+        <g fill="rgb(29,157,242)" id="ID_legend_6">
+          <rect height="20" rx="3" ry="3" width="20" x="10" y="160"/>
+          <rect fill="url(#WhiteBlackGradient)" height="20" rx="3" ry="3" width="20" x="10" y="160"/>
+          <rect fill-opacity="0.3" filter="url(#SaturateMinus)" height="20" rx="3" ry="3" width="20" x="10" y="160"/>
+        </g>
+        <g fill="rgb(181,207,50)" id="ID_legend_7">
+          <rect height="20" rx="3" ry="3" width="20" x="10" y="190"/>
+          <rect fill="url(#WhiteBlackGradient)" height="20" rx="3" ry="3" width="20" x="10" y="190"/>
+          <rect fill-opacity="0.3" filter="url(#SaturateMinus)" height="20" rx="3" ry="3" width="20" x="10" y="190"/>
+        </g>
+        <g fill="rgb(212,58,38)" id="ID_legend_8">
+          <rect height="20" rx="3" ry="3" width="20" x="10" y="220"/>
+          <rect fill="url(#WhiteBlackGradient)" height="20" rx="3" ry="3" width="20" x="10" y="220"/>
+          <rect fill-opacity="0.3" filter="url(#SaturateMinus)" height="20" rx="3" ry="3" width="20" x="10" y="220"/>
+        </g>
+      </g>
+      <!--draw legend labels-->
+      <g id="ID_legend_labels" style="fill:black;stroke:none;font-family:Arial;;font-weight:normal;font-style:normal;text-decoration:none;filter:none;text-anchor:start">
+        <text x="40" y="27"/>
+        <text x="40" y="57"/>
+        <text x="40" y="87"/>
+        <text x="40" y="117"/>
+        <text x="40" y="147"/>
+        <text x="40" y="177"/>
+        <text x="40" y="207"/>
+        <text x="40" y="237"/>
+      </g>
+    </g>
+    <g style="clip-path: url(#ID_backgroundClipPath)">
+      <g fill="black" fill-opacity="0.2" id="ID_graph_shadow_1">
+        <g transform="translate(5.01,-4.74) rotate(-60.88,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 539.14,185.48 z"/>
+        </g>
+      </g>
+      <g fill="black" fill-opacity="0.2" id="ID_graph_shadow_2">
+        <g transform="translate(10.27,-0.34) rotate(11.47,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 390.82,64.24 z"/>
+        </g>
+      </g>
+      <g fill="black" fill-opacity="0.2" id="ID_graph_shadow_3">
+        <g transform="translate(9.31,7.92) rotate(64.41,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 468.69,104.52 z"/>
+        </g>
+      </g>
+      <g fill="black" fill-opacity="0.2" id="ID_graph_shadow_4">
+        <g transform="translate(3.49,10.98) rotate(108.53,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 498.66,131.01 z"/>
+        </g>
+      </g>
+      <g fill="black" fill-opacity="0.2" id="ID_graph_shadow_5">
+        <g transform="translate(-3.15,8.11) rotate(172.06,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 427.89,79.26 z"/>
+        </g>
+      </g>
+      <g fill="black" fill-opacity="0.2" id="ID_graph_shadow_6">
+        <g transform="translate(-4.24,-0.4) rotate(238.24,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 417.02,74.15 z"/>
+        </g>
+      </g>
+      <g fill="black" fill-opacity="0.2" id="ID_graph_shadow_7">
+        <g transform="translate(-0.57,-4.16) rotate(248.82,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 567.57,264.23 z"/>
+        </g>
+      </g>
+      <g fill="black" fill-opacity="0.2" id="ID_graph_shadow_8">
+        <g transform="translate(1.53,-4.86) rotate(270,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 554.44,218.08 z"/>
+        </g>
+      </g>
+      <g fill="rgb(0,178,195)" filter="none" id="ID_bar_1" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g transform="translate(2.01,-7.74) rotate(-60.88,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 539.14,185.48 z"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 539.14,185.48 z" fill="url(#WhiteBlackGradient)"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 539.14,185.48 z" fill-opacity="0.3" filter="url(#SaturateMinus)"/>
+        </g>
+      </g>
+      <g fill="rgb(255,195,56)" filter="none" id="ID_bar_2" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g transform="translate(7.27,-3.34) rotate(11.47,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 390.82,64.24 z"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 390.82,64.24 z" fill="url(#WhiteBlackGradient)"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 390.82,64.24 z" fill-opacity="0.3" filter="url(#SaturateMinus)"/>
+        </g>
+      </g>
+      <g fill="rgb(87,62,130)" filter="none" id="ID_bar_3" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g transform="translate(6.31,4.92) rotate(64.41,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 468.69,104.52 z"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 468.69,104.52 z" fill="url(#WhiteBlackGradient)"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 468.69,104.52 z" fill-opacity="0.3" filter="url(#SaturateMinus)"/>
+        </g>
+      </g>
+      <g fill="rgb(79,168,57)" filter="none" id="ID_bar_4" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g transform="translate(0.49,7.98) rotate(108.53,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 498.66,131.01 z"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 498.66,131.01 z" fill="url(#WhiteBlackGradient)"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 498.66,131.01 z" fill-opacity="0.3" filter="url(#SaturateMinus)"/>
+        </g>
+      </g>
+      <g fill="rgb(217,87,0)" filter="none" id="ID_bar_5" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g transform="translate(-6.15,5.11) rotate(172.06,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 427.89,79.26 z"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 427.89,79.26 z" fill="url(#WhiteBlackGradient)"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 427.89,79.26 z" fill-opacity="0.3" filter="url(#SaturateMinus)"/>
+        </g>
+      </g>
+      <g fill="rgb(29,157,242)" filter="none" id="ID_bar_6" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g transform="translate(-7.24,-3.4) rotate(238.24,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 417.02,74.15 z"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 417.02,74.15 z" fill="url(#WhiteBlackGradient)"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 417.02,74.15 z" fill-opacity="0.3" filter="url(#SaturateMinus)"/>
+        </g>
+      </g>
+      <g fill="rgb(181,207,50)" filter="none" id="ID_bar_7" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g transform="translate(-3.57,-7.16) rotate(248.82,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 567.57,264.23 z"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 567.57,264.23 z" fill="url(#WhiteBlackGradient)"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 567.57,264.23 z" fill-opacity="0.3" filter="url(#SaturateMinus)"/>
+        </g>
+      </g>
+      <g fill="rgb(212,58,38)" filter="none" id="ID_bar_8" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g transform="translate(-1.47,-7.86) rotate(270,312,312)">
+          <path d="M312,312 l260,0 A260,260 0 0,0 554.44,218.08 z"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 554.44,218.08 z" fill="url(#WhiteBlackGradient)"/>
+          <path d="M312,312 l260,0 A260,260 0 0,0 554.44,218.08 z" fill-opacity="0.3" filter="url(#SaturateMinus)"/>
+        </g>
+      </g>
+      <g fill="rgb(0,178,195)" filter="none" id="ID_pie_label_1" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g font-size="16" transform="translate(97.76,-163.9)">
+          <text fill="grey" font-weight="bold" text-anchor="middle" x="263" y="303">8.09 %</text>
+          <text fill="white" font-weight="bold" text-anchor="middle" x="262" y="302">8.09 %</text>
+        </g>
+      </g>
+      <g fill="rgb(255,195,56)" filter="none" id="ID_pie_label_2" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g font-size="16" transform="translate(222.61,-59.41)">
+          <text fill="grey" font-weight="bold" text-anchor="middle" x="263" y="303">20.1 %</text>
+          <text fill="white" font-weight="bold" text-anchor="middle" x="262" y="302">20.1 %</text>
+        </g>
+      </g>
+      <g fill="rgb(87,62,130)" filter="none" id="ID_pie_label_3" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g font-size="16" transform="translate(199.84,136.82)">
+          <text fill="grey" font-weight="bold" text-anchor="middle" x="263" y="303">14.71 %</text>
+          <text fill="white" font-weight="bold" text-anchor="middle" x="262" y="302">14.71 %</text>
+        </g>
+      </g>
+      <g fill="rgb(79,168,57)" filter="none" id="ID_pie_label_4" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g font-size="16" transform="translate(61.7,209.64)">
+          <text fill="grey" font-weight="bold" text-anchor="middle" x="263" y="303">12.25 %</text>
+          <text fill="white" font-weight="bold" text-anchor="middle" x="262" y="302">12.25 %</text>
+        </g>
+      </g>
+      <g fill="rgb(217,87,0)" filter="none" id="ID_pie_label_5" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g font-size="16" transform="translate(-96.17,141.38)">
+          <text fill="grey" font-weight="bold" text-anchor="middle" x="263" y="303">17.65 %</text>
+          <text fill="white" font-weight="bold" text-anchor="middle" x="262" y="302">17.65 %</text>
+        </g>
+      </g>
+      <g fill="rgb(29,157,242)" filter="none" id="ID_pie_label_6" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g font-size="16" transform="translate(-121.99,-60.74)">
+          <text fill="grey" font-weight="bold" text-anchor="middle" x="263" y="303">18.38 %</text>
+          <text fill="white" font-weight="bold" text-anchor="middle" x="262" y="302">18.38 %</text>
+        </g>
+      </g>
+      <g fill="rgb(181,207,50)" filter="none" id="ID_pie_label_7" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g font-size="16" transform="translate(-34.69,-150.08)">
+          <text fill="grey" font-weight="bold" text-anchor="middle" x="263" y="303">2.94 %</text>
+          <text fill="white" font-weight="bold" text-anchor="middle" x="262" y="302">2.94 %</text>
+        </g>
+      </g>
+      <g fill="rgb(212,58,38)" filter="none" id="ID_pie_label_8" opacity="1" stroke="none" stroke-opacity="1" stroke-width="0">
+        <g font-size="16" transform="translate(15.09,-166.76)">
+          <text fill="grey" font-weight="bold" text-anchor="middle" x="263" y="303">5.88 %</text>
+          <text fill="white" font-weight="bold" text-anchor="middle" x="262" y="302">5.88 %</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+</svg>

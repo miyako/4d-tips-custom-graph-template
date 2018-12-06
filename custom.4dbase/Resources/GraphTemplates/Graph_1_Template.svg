@@ -1,0 +1,73 @@
+﻿		<!-- exemple de path "M 0 0 l 0 -198 s 0,-6,6,-6 l 12 0 s 6,0,6,6 l 0 198 z" -->
+		<!--#4DCODE
+		$svg:="<g style='clip-path: url(#ID_backgroundClipPath)'>"
+		For ($i;1;2)  //First loop for SHADOWS, second for COLOURED bars
+			For ($serie;1;$nbSeries)
+				If ($i=1)
+					$svg:=$svg+"<g fill='black' fill-opacity='0.2' id='ID_graph_shadow_"+String:C10($serie)+"'>"
+				Else 
+					$svg:=$svg+"<g fill='"+$barColors{$serie}+"' filter='none' id='ID_graph_"+String:C10($serie)+"' opacity='1' stroke='none' stroke-opacity='1' stroke-width='0'>"
+				End if 
+
+				For ($value;1;$NbValues)
+
+					$BarHeight:=Round:C94($yValuesArrPtr{$serie}->{$value}*$yScale;2)
+					If (Abs:C99($BarHeight)>=1)
+
+						$BarRoundBis:=$BarRound
+						If ($BarRoundBis>Abs:C99($BarHeight))
+							BarRoundBis:=Abs:C99($BarHeight)
+						End if 
+						If ($BarRoundBis>($barWidth/2))
+							$BarRoundBis:=$barWidth/2
+						End if 
+
+						If ($yValuesArrPtr{$serie}->{$value}>0)
+							$Path:="M 0 0 "
+							$Path:=$Path+"l 0 "+String:C10(($BarHeight-$BarRoundBis)*(-1);"&xml")+" "
+							$Path:=$Path+"s 0 -"+String:C10($BarRoundBis;"&xml")+" "+String:C10($BarRoundBis;"&xml")+" -"+String:C10($BarRoundBis;"&xml")+" "
+							$Path:=$Path+"l "+String:C10($barWidth-(2*$BarRoundBis);"&xml")+" 0 "
+							$Path:=$Path+"s "+String:C10($BarRoundBis;"&xml")+" 0 "+String:C10($BarRoundBis;"&xml")+" "+String:C10($BarRoundBis;"&xml")+" "
+							$Path:=$Path+"l 0 "+String:C10($BarHeight-$BarRoundBis;"&xml")+" "
+							$Path:=$Path+"z"
+						Else 
+							$Path:="M 0 0 "
+							$Path:=$Path+"l 0 "+String:C10(($BarHeight+$BarRoundBis)*(-1);"&xml")+" "
+							$Path:=$Path+"s 0 "+String:C10($BarRoundBis;"&xml")+" "+String:C10($BarRoundBis;"&xml")+" "+String:C10($BarRoundBis;"&xml")+" "
+							$Path:=$Path+"l "+String:C10($barWidth-(2*$BarRoundBis);"&xml")+" 0 "
+							$Path:=$Path+"s "+String:C10($BarRoundBis;"&xml")+" 0 "+String:C10($BarRoundBis;"&xml")+" -"+String:C10($BarRoundBis;"&xml")+" "
+							$Path:=$Path+"l 0 "+String:C10(($BarHeight+$BarRoundBis)*(1);"&xml")+" "
+							$Path:=$Path+"z"
+						End if 
+
+						If ($i=1)
+							$TranslateX:=$GraphX1+$barGap+(($value-1)*$blockWidth)+(($serie-1)*($barWidth+$barGap))+$BarShadowX
+							$TranslateY:=$yZeroAxis
+							$Translate:="translate("+String:C10($TranslateX;"&xml")+","+String:C10($TranslateY;"&xml")+")"
+
+							$svg:=$svg+"<path d='"+$Path+"' transform='"+$Translate+"'/>"
+
+						Else 
+							$TranslateX:=$GraphX1+$barGap+(($value-1)*$blockWidth)+(($serie-1)*($barWidth+$barGap))
+							$TranslateY:=$yZeroAxis
+							$Translate:="translate("+String:C10($TranslateX;"&xml")+","+String:C10($TranslateY;"&xml")+")"
+
+							$svg:=$svg+"<path d='"+$Path+"' transform='"+$Translate+"'/>"
+							$svg:=$svg+"<path d='"+$Path+"' transform='"+$Translate+"' fill='url(#WhiteBlackGradient)'/>"
+							$svg:=$svg+"<path d='"+$Path+"' transform='"+$Translate+"' fill-opacity='0.3' filter='url(#SaturateMinus)'/>"
+
+						End if 
+					End if 
+
+				End for 
+				$svg:=$svg+"</g>"
+
+			End for 
+		End for 
+		$svg:=$svg+"</g>"
+		-->
+	
+		<!--4DHTML $svg-->
+		
+	</g>
+</svg>

@@ -1,0 +1,1024 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--#4DCODE
+
+  //%attributes = {"lang":"en"} comment added and reserved by 4D.
+C_OBJECT:C1216($graphValues)
+C_OBJECT:C1216($graphParameters)
+
+C_BOOLEAN:C305($xGrid;$yGrid)
+C_BOOLEAN:C305($yMinIsDefined;$yMaxIsDefined;$xProp)
+C_BOOLEAN:C305($displayLegend)
+C_BOOLEAN:C305($drawLabels;$drawY0axis)
+C_LONGINT:C283($graphType)
+C_LONGINT:C283($i;$j;$n)
+C_LONGINT:C283($nbSteps)
+C_LONGINT:C283($value;$serie;$nbLoops)
+
+C_REAL:C285($nb)
+C_REAL:C285($BarMin;$BarMax)
+C_REAL:C285($nbSeries;$nbValues)
+C_REAL:C285($yMin;$yMax)
+C_REAL:C285($barWidth;$barWidthMin;$barWidthMax;$barGap)
+C_REAL:C285($leftMargin;$rightMargin;$topMargin;$bottomMargin)
+C_REAL:C285($graphDefaultHeight;$graphDefaultWidth)
+C_REAL:C285($bulletWidth;$bulletHeight;$BulletRadius)
+C_REAL:C285($graphWidth;$lineWidth)
+C_REAL:C285($pieFontSize;$pieShift)
+C_REAL:C285($BarRound;$BarShadowX;$BarShadowY)
+C_REAL:C285($fontHeight)
+  //C_REAL($xMin;$xMax) DO NOT DECLARE they can be either NUM, DATE or TIME
+C_REAL:C285($stepX)
+C_REAL:C285($LegendBulletWidth;$LegendBulletHeight)
+C_REAL:C285($InterMarginX;$InterMarginY)
+C_REAL:C285($LegendBulletGap)
+C_REAL:C285($blockWidth)
+C_REAL:C285($val)
+C_REAL:C285($yStep)
+C_REAL:C285($MaxAbs)
+C_REAL:C285($LabelsFontWidth;$fontHeight)
+C_REAL:C285($nbChar)
+C_REAL:C285($graphX1;$graphY1;$graphX2;$graphY2)
+C_REAL:C285($LegendLabelsVshift;$LegendlInternalMarginH;$BottomLabelsHeight)
+C_REAL:C285($LeftLabelsWidth;$LeftLabelsVshift)
+C_REAL:C285($yScale;$yStepScaled)
+C_REAL:C285($yZeroAxis)
+C_REAL:C285($graphHeight)
+C_REAL:C285($LegendWidth;$LegendHeight)
+
+C_TEXT:C284($fontColor)
+C_TEXT:C284($xAxisType)
+C_TEXT:C284($documentBackgroundColor;$documentbackgroundOpacity)
+C_TEXT:C284($graphBackgroundColor;$graphBackgroundShadowColor;$graphBackgroundOpacity)
+C_TEXT:C284($fontStyle)
+C_TEXT:C284($legendFontColor)
+C_TEXT:C284($ViewBox)
+
+C_POINTER:C301($xAxisLabelsPtr)
+
+  // Received parameters
+$graphValues:=$1
+$graphParameters:=$2
+
+  //VALUES initilisations
+$xAxisLabelsPtr:=OB Get:C1224($graphValues;"xAxisLabels")
+
+Case of 
+	: (Type:C295($xAxisLabelsPtr->)=17)
+		$xAxisType:="date"
+	: (Type:C295($xAxisLabelsPtr->)=32)
+		$xAxisType:="time"
+	: (Type:C295($xAxisLabelsPtr->)=14)
+		$xAxisType:="numeric"
+	: (Type:C295($xAxisLabelsPtr->)=15)
+		$xAxisType:="numeric"
+	: (Type:C295($xAxisLabelsPtr->)=16)
+		$xAxisType:="numeric"
+	Else 
+		$xAxisType:="text"
+End case 
+
+ARRAY POINTER:C280($yValuesArrPtr;0)
+If (OB Is defined:C1231($graphValues;"yValues"))
+	OB GET ARRAY:C1229($graphValues;"yValues";$yValuesArrPtr)
+End if 
+  //PRE-CALCULATIONS
+
+$nbSeries:=Size of array:C274($yValuesArrPtr)
+$nbValues:=Size of array:C274($yValuesArrPtr{1}->)
+
+  //PARAMETERS initilisations
+$graphType:=1
+If (OB Is defined:C1231($graphParameters;"graphType"))
+	$graphType:=OB Get:C1224($graphParameters;"graphType")
+	If ($graphType=7)
+		$nbSeries:=1
+		If ($nbValues>8)
+			DELETE FROM ARRAY:C228($yValuesArrPtr{1}->;9;100000)
+			$nbValues:=8
+		End if 
+	End if 
+End if 
+
+  // basic parameters
+If (OB Is defined:C1231($graphParameters;"xGrid"))
+	$xGrid:=OB Get:C1224($graphParameters;"xGrid")
+Else 
+	$xGrid:=True:C214
+End if 
+
+If (OB Is defined:C1231($graphParameters;"yGrid"))
+	$yGrid:=OB Get:C1224($graphParameters;"yGrid")
+Else 
+	$yGrid:=True:C214
+End if 
+
+If (OB Is defined:C1231($graphParameters;"yMin"))
+	$yMinIsDefined:=True:C214
+	$yMin:=OB Get:C1224($graphParameters;"yMin")
+Else 
+	$yMinIsDefined:=False:C215
+	$yMin:=0
+End if 
+
+If (OB Is defined:C1231($graphParameters;"yMax"))
+	$yMaxIsDefined:=True:C214
+	$yMax:=OB Get:C1224($graphParameters;"yMax")
+Else 
+	$yMaxIsDefined:=False:C215
+	$yMax:=0
+End if 
+
+If ($yMin>=$yMax)
+	$yMinIsDefined:=False:C215
+	$yMaxIsDefined:=False:C215
+End if 
+
+$xProp:=False:C215
+If ($xAxisType#"text")
+	If (OB Is defined:C1231($graphParameters;"xProp"))
+		If (($graphType=4) | ($graphType=5) | ($graphType=6))
+			$xProp:=OB Get:C1224($graphParameters;"xProp")
+		End if 
+	End if 
+End if 
+
+  // *** NEW parameters ***
+
+
+If (OB Is defined:C1231($graphParameters;"documentBackgroundColor"))
+	$documentBackgroundColor:=OB Get:C1224($graphParameters;"documentBackgroundColor")
+Else 
+	$documentBackgroundColor:="none"
+End if 
+
+If (OB Is defined:C1231($graphParameters;"documentBackgroundOpacity"))
+	$documentbackgroundOpacity:=String:C10(OB Get:C1224($graphParameters;"documentBackgroundOpacity")/100;"&xml")
+Else 
+	$documentbackgroundOpacity:="1"
+End if 
+
+If (OB Is defined:C1231($graphParameters;"leftMargin"))
+	$leftMargin:=OB Get:C1224($graphParameters;"leftMargin";Is longint:K8:6)
+Else 
+	$leftMargin:=12
+End if 
+
+If (OB Is defined:C1231($graphParameters;"rightMargin"))
+	$rightMargin:=OB Get:C1224($graphParameters;"rightMargin";Is longint:K8:6)
+Else 
+	$rightMargin:=12
+End if 
+
+If (OB Is defined:C1231($graphParameters;"topMargin"))
+	$topMargin:=OB Get:C1224($graphParameters;"topMargin";Is longint:K8:6)
+Else 
+	$topMargin:=12
+End if 
+
+If (OB Is defined:C1231($graphParameters;"bottomMargin"))
+	$bottomMargin:=OB Get:C1224($graphParameters;"bottomMargin";Is longint:K8:6)
+Else 
+	$bottomMargin:=12
+End if 
+
+If (OB Is defined:C1231($graphParameters;"defaultHeight"))
+	$graphDefaultHeight:=OB Get:C1224($graphParameters;"defaultHeight";Is longint:K8:6)
+Else 
+	If $graphType#7
+		$graphDefaultHeight:=400
+	Else 
+		$graphDefaultHeight:=600
+	End if 
+End if 
+
+If (OB Is defined:C1231($graphParameters;"defaultWidth"))
+	$graphDefaultWidth:=OB Get:C1224($graphParameters;"defaultWidth";Is longint:K8:6)
+Else 
+	If $graphType#7
+		$graphDefaultWidth:=800
+	Else 
+		$graphDefaultWidth:=600
+	End if 
+End if 
+
+If (OB Is defined:C1231($graphParameters;"columnWidthMin"))
+	$barWidthMin:=OB Get:C1224($graphParameters;"columnWidthMin";Is longint:K8:6)
+Else 
+	$barWidthMin:=10
+End if 
+
+If (OB Is defined:C1231($graphParameters;"columnWidthMax"))
+	$barWidthMax:=OB Get:C1224($graphParameters;"columnWidthMax";Is longint:K8:6)
+Else 
+	$barWidthMax:=200
+End if 
+
+If (OB Is defined:C1231($graphParameters;"columnGap"))
+	$barGap:=OB Get:C1224($graphParameters;"columnGap";Is longint:K8:6)
+Else 
+	$barGap:=12
+End if 
+
+If (OB Is defined:C1231($graphParameters;"plotWidth"))
+	$bulletWidth:=Round:C94(OB Get:C1224($graphParameters;"plotWidth";Is real:K8:4);2)
+Else 
+	$bulletWidth:=12
+End if 
+
+If (OB Is defined:C1231($graphParameters;"plotHeight"))
+	$bulletHeight:=Round:C94(OB Get:C1224($graphParameters;"plotHeight";Is real:K8:4);2)
+Else 
+	$bulletHeight:=12
+End if 
+
+If (OB Is defined:C1231($graphParameters;"lineWidth"))
+	$lineWidth:=Round:C94(OB Get:C1224($graphParameters;"lineWidth";Is real:K8:4);2)
+Else 
+	$lineWidth:=2
+End if 
+
+If (OB Is defined:C1231($graphParameters;"plotRadius"))
+	$BulletRadius:=Round:C94(OB Get:C1224($graphParameters;"plotRadius";Is real:K8:4);2)
+Else 
+	$BulletRadius:=12
+End if 
+
+ARRAY TEXT:C222($barColors;8)
+$barColors{1}:="rgb(0,178,195)"
+$barColors{2}:="rgb(255,195,56)"
+$barColors{3}:="rgb(87,62,130)"
+$barColors{4}:="rgb(79,168,57)"
+$barColors{5}:="rgb(217,87,0)"
+$barColors{6}:="rgb(29,157,242)"
+$barColors{7}:="rgb(181,207,50)"
+$barColors{8}:="rgb(212,58,38)"
+
+If ((OB Is defined:C1231($graphParameters;"colors")) & ($graphType#8))
+	ARRAY TEXT:C222($newBarColors;8)
+	OB GET ARRAY:C1229($graphParameters;"colors";$newBarColors)
+	ARRAY TEXT:C222($newBarColors;8)
+	For ($i;1;8)
+		If ($newBarColors{$i}#"")
+			$barColors{$i}:=$newBarColors{$i}
+		End if 
+	End for 
+End if 
+
+If (OB Is defined:C1231($graphParameters;"graphBackgroundColor"))
+	$graphBackgroundColor:=OB Get:C1224($graphParameters;"graphBackgroundColor")
+Else 
+	$graphBackgroundColor:="rgb(229,229,229)"
+End if 
+
+
+If (OB Is defined:C1231($graphParameters;"graphBackgroundShadowColor"))
+	$graphBackgroundShadowColor:=OB Get:C1224($graphParameters;"graphBackgroundShadowColor")
+Else 
+	$graphBackgroundShadowColor:="rgb(168,168,168)"
+End if 
+
+If (OB Is defined:C1231($graphParameters;"graphBackgroundOpacity"))
+	$graphBackgroundOpacity:=String:C10(OB Get:C1224($graphParameters;"graphBackgroundOpacity")/100;"&xml")
+Else 
+	$graphBackgroundOpacity:="1"
+End if 
+
+If (OB Is defined:C1231($graphParameters;"pieFontSize"))
+	$pieFontSize:=OB Get:C1224($graphParameters;"pieFontSize";Is longint:K8:6)
+Else 
+	$pieFontSize:=16
+End if 
+
+If (OB Is defined:C1231($graphParameters;"pieShift"))
+	$pieShift:=OB Get:C1224($graphParameters;"pieShift")
+Else 
+	$pieShift:=8
+End if 
+
+if (OB Is defined:C1231($graphParameters;"pieDirection"))
+	$pieDirection:=OB Get:C1224($graphParameters;"pieDirection")
+Else 
+	$pieDirection:=1 // clockwise
+End if 
+
+if (OB Is defined:C1231($graphParameters;"pieStartAngle"))
+	$startAngle:=OB Get:C1224($graphParameters;"pieStartAngle")
+Else 
+	$startAngle:=0 // 12 o'clock
+End if
+
+$BarRound:=6
+$BarShadowX:=3
+$BarShadowY:=0
+
+$displayLegend:=True:C214
+If (OB Is defined:C1231($graphParameters;"displayLegend"))
+	$displayLegend:=OB Get:C1224($graphParameters;"displayLegend";Is Boolean:K8:9)
+End if 
+
+ARRAY TEXT:C222($legendLabels;8)
+If (OB Is defined:C1231($graphParameters;"legendLabels"))
+	OB GET ARRAY:C1229($graphParameters;"legendLabels";$legendLabels)
+End if 
+ARRAY TEXT:C222($legendLabels;8)
+
+If (OB Is defined:C1231($graphParameters;"fontSize"))
+	$fontHeight:=OB Get:C1224($graphParameters;"fontSize";Is longint:K8:6)
+Else 
+	$fontHeight:=12
+End if 
+
+If (OB Is defined:C1231($graphParameters;"fontColor"))
+	$fontColor:=OB Get:C1224($graphParameters;"fontColor")
+Else 
+	$fontColor:="black"
+End if 
+
+$fontStyle:="font-size:"+String:C10($fontHeight;"&xml")+"px"
+$LabelsFontWidth:=$fontHeight/2
+
+$InterMarginX:=12
+$InterMarginY:=8
+
+If (OB Is defined:C1231($graphParameters;"legendIconWidth"))
+	$LegendBulletWidth:=OB Get:C1224($graphParameters;"legendIconWidth";Is longint:K8:6)
+Else 
+	$LegendBulletWidth:=20
+End if 
+
+If (OB Is defined:C1231($graphParameters;"legendIconHeight"))
+	$LegendBulletHeight:=OB Get:C1224($graphParameters;"legendIconHeight";Is longint:K8:6)
+Else 
+	$LegendBulletHeight:=20
+End if 
+
+If (OB Is defined:C1231($graphParameters;"legendIconGap"))
+	$LegendBulletGap:=OB Get:C1224($graphParameters;"legendIconGap";Is longint:K8:6)
+Else 
+	$LegendBulletGap:=Round:C94($LegendBulletHeight/2;0)
+End if 
+
+
+If (OB Is defined:C1231($graphParameters;"legendFontColor"))
+	$legendFontColor:=OB Get:C1224($graphParameters;"legendFontColor")
+Else 
+	$legendFontColor:="black"
+End if 
+
+
+
+  // calculations
+$LegendLabelsVshift:=$fontHeight/2
+$LegendlInternalMarginH:=10
+$BottomLabelsHeight:=$fontHeight+4
+
+$barWidth:=0
+$blockWidth:=0
+$graphWidth:=0
+
+If ($nbSeries>0) & ($nbValues>0)
+	
+	If ($graphType#7)
+		
+		If ($graphType=1) | ($graphType=8)
+			$barWidth:=Round:C94(($graphDefaultWidth-(($nbSeries+1)*$nbValues*$barGap))/($nbSeries*$nbValues);2)
+			If ($barWidth<$barWidthMin)
+				$barWidth:=$barWidthMin
+			Else 
+				If ($barWidth>$barWidthMax)
+					$barWidth:=$barWidthMax
+				End if 
+			End if 
+			$blockWidth:=($nbSeries*$barWidth)+(($nbSeries+1)*$barGap)
+			$graphWidth:=$blockWidth*$nbValues
+		End if 
+		
+		If ($graphType=2) | ($graphType=3)
+			$blockWidth:=$graphDefaultWidth/$nbValues
+			$barWidth:=$blockWidth-(2*$barGap)
+			If ($barWidth<$barWidthMin)
+				$barWidth:=$barWidthMin
+			Else 
+				If ($barWidth>$barWidthMax)
+					$barWidth:=$barWidthMax
+				End if 
+			End if 
+			$blockWidth:=$barWidth+(2*$barGap)
+			$graphWidth:=$blockWidth*$nbValues
+		End if 
+		
+		
+		If ($xProp)
+			
+			If (OB Is defined:C1231($graphParameters;"xMin"))
+				
+				Case of 
+					: ($xAxisType="date")
+						$xMin:=OB Get:C1224($graphParameters;"xMin";4)  //Is date:K8:7
+					: ($xAxisType="numeric")
+						$xMin:=OB Get:C1224($graphParameters;"xMin";9)  //Is real:K8:4
+					: ($xAxisType="time")
+						$xMin:=OB Get:C1224($graphParameters;"xMin";11)  //Is time:K8:8
+				End case 
+				
+			Else 
+				$xMin:=Min:C4($xAxisLabelsPtr->)
+			End if 
+			
+			If (OB Is defined:C1231($graphParameters;"xMax"))
+				
+				Case of 
+					: ($xAxisType="date")
+						$xMax:=OB Get:C1224($graphParameters;"xMax";4)
+					: ($xAxisType="numeric")
+						$xMax:=OB Get:C1224($graphParameters;"xMax";9)
+					: ($xAxisType="time")
+						$xMax:=OB Get:C1224($graphParameters;"xMax";11)
+				End case 
+			Else 
+				$xMax:=Max:C3($xAxisLabelsPtr->)
+			End if 
+			
+			If ($xMax<=$xMin)
+				$xMin:=Min:C4($xAxisLabelsPtr->)
+				$xMax:=Max:C3($xAxisLabelsPtr->)
+			End if 
+			
+			$nbSteps:=$xMax-$xMin
+			
+			If ($nbSteps>12)
+				
+				Case of 
+					: ($xAxisType="time")
+						
+						$nbSteps:=12
+						$stepX:=($xMax-$xMin)/$nbSteps
+						If ($stepX#Int:C8($stepX))
+							$stepX:=Int:C8($stepX+1)
+						End if 
+						$xMax:=Time:C179($xMin+($stepX*$nbSteps))
+						
+					: ($xAxisType="date")
+						
+						$stepX:=7
+						While ($nbSteps>12)
+							$nbSteps:=($xMax-$xMin)/$stepX
+							$stepX:=$stepX*2
+						End while 
+						$stepX:=$stepX/2
+						If ($nbSteps#Int:C8($nbSteps))
+							$nbSteps:=Int:C8($nbSteps+1)
+						End if 
+						$xMax:=Add to date:C393($xMin;0;0;$stepX*$nbSteps)
+						
+					Else 
+						
+						$nbSteps:=10
+						$stepX:=($xMax-$xMin)/$nbSteps
+						If ($stepX#Int:C8($stepX))
+							  // $stepX:=Int:C8($stepX+1)
+						End if 
+						$xMax:=$xMin+($stepX*$nbSteps)
+						
+				End case 
+				
+			Else 
+				$stepX:=1
+			End if 
+			
+			  // *** PHYSICAL widths of blocks and graph ***
+			
+			$blockWidth:=Round:C94($graphDefaultWidth/$nbSteps;2)
+			$graphWidth:=$blockWidth*$nbSteps
+			
+			ARRAY REAL:C219($_xAxisPropPositions;$nbValues)
+			For ($value;1;$nbValues)
+				$_xAxisPropPositions{$value}:=Round:C94($graphWidth*($xAxisLabelsPtr->{$value}-$xMin)/($xMax-$xMin);2)
+			End for 
+			
+			ARRAY TEXT:C222($_xAxisCalculatedLabels;$nbSteps+1)
+			For ($value;1;($nbSteps+1))
+				If ($xAxisType="numeric")
+					$val:=$xMin+($stepX*($value-1))
+					If (Int:C8($val)#$val)
+						$val:=Round:C94($val;2)
+					End if 
+					$_xAxisCalculatedLabels{$value}:=String:C10($val)  //let the localized decimal setting (, or .)
+				End if 
+				If ($xAxisType="time")
+					$_xAxisCalculatedLabels{$value}:=String:C10(Time:C179($xMin+($stepX*($value-1)));1)
+				End if 
+				If ($xAxisType="date")
+					$_xAxisCalculatedLabels{$value}:=String:C10(Add to date:C393($xMin;0;0;$stepX*($value-1));1)
+				End if 
+			End for 
+			
+		Else   // not proportional
+			
+			If ($graphType=4)
+				$blockWidth:=Round:C94($graphDefaultWidth/($nbValues);2)
+				$graphWidth:=$blockWidth*$nbValues
+			End if 
+			
+			If ($graphType=5)
+				$blockWidth:=Round:C94($graphDefaultWidth/($nbValues-1);2)
+				$graphWidth:=$blockWidth*($nbValues-1)
+			End if 
+			
+			If ($graphType=6)
+				$blockWidth:=Round:C94($graphDefaultWidth/($nbValues);2)
+				$graphWidth:=$blockWidth*$nbValues
+			End if 
+			
+		End if 
+		
+		  // Vertical scales
+		
+		If ($yMinIsDefined)
+			$BarMin:=$yMin
+		Else 
+			$BarMin:=0
+		End if 
+		
+		If $yMaxIsDefined
+			$BarMax:=$yMax
+		Else 
+			$BarMax:=0
+		End if 
+		
+		If ($graphType=2) | ($graphType=3)  // stacked bars
+			
+			ARRAY REAL:C219($_sumPos;$nbValues)
+			ARRAY REAL:C219($_sumNeg;$nbValues)
+			ARRAY REAL:C219($_stackScale;$nbValues)
+			
+			$value:=1
+			For ($value;1;$nbValues)
+				For ($serie;1;$nbSeries)
+					If ($yValuesArrPtr{$serie}->{$value}>0)
+						$_sumPos{$value}:=$_sumPos{$value}+$yValuesArrPtr{$serie}->{$value}
+					Else 
+						$_sumNeg{$value}:=$_sumNeg{$value}+$yValuesArrPtr{$serie}->{$value}
+					End if 
+				End for 
+			End for 
+			
+			For ($value;1;$nbValues)
+				If ($_sumPos{$value}>$BarMax)
+					$BarMax:=$_sumPos{$value}
+				End if 
+				If ($_sumNeg{$value}<$BarMin)
+					$BarMin:=$_sumNeg{$value}
+				End if 
+				If ($graphType=2)
+					$_stackScale{$value}:=100/($_sumPos{$value}-$_sumNeg{$value})
+				End if 
+			End for 
+			
+			If ($graphType=2)  //proportionnal stacked bars
+				If $BarMin>=0
+					$BarMax:=100
+					$BarMin:=0
+				Else 
+					If $BarMax<=0
+						$BarMax:=0
+						$BarMin:=-100
+					Else 
+						$BarMax:=100
+						$BarMin:=-100
+					End if 
+				End if 
+			End if 
+			
+		Else   // other than stacked bars
+			
+			For ($serie;1;$nbSeries)
+				For ($value;1;$nbValues)
+					If ($yValuesArrPtr{$serie}->{$value}<$BarMin)
+						$BarMin:=$yValuesArrPtr{$serie}->{$value}
+					End if 
+					If ($yValuesArrPtr{$serie}->{$value}>$BarMax)
+						$BarMax:=$yValuesArrPtr{$serie}->{$value}
+					End if 
+				End for 
+			End for 
+			
+		End if 
+				
+		If (($BarMax>=0) & ($BarMin>=0))  // both positive or = 0
+			// $BarMin:=0 (ACI0095556)
+			$drawY0axis:=False:C215
+		Else 
+			If (($BarMax<=0) & ($BarMin<=0))  // both negative or = 0
+				// $BarMax:=0  (ACI0095556)
+				$drawY0axis:=False:C215
+			Else   // one positive, the other negative
+				$drawY0axis:=True:C214
+			End if 
+		End if 
+		
+		If (($BarMax#0) | ($BarMin#0))
+			$yStep:=Round:C94((($BarMax-$BarMin)/10);(-1)*(Int:C8(Log:C22($BarMax-$BarMin)/Log:C22(10))-1))
+		Else 
+			$yStep:=1  // to avoid division by zero below
+		End if 
+		
+		If ($BarMax>(Int:C8($BarMax/$yStep)*$yStep))
+			$BarMax:=(Int:C8($BarMax/$yStep)+1)*$yStep
+		Else 
+			$BarMax:=(Int:C8($BarMax/$yStep)+0)*$yStep
+		End if 
+		
+		If ($BarMin<(Int:C8($BarMin/$yStep)*$yStep))
+			$BarMin:=(Int:C8($BarMin/$yStep)+1)*$yStep
+		Else 
+			$BarMin:=(Int:C8($BarMin/$yStep)+0)*$yStep
+		End if 
+		
+		  // *** Calculation of the left labels width ***
+		
+		If (Abs:C99($BarMax)>Abs:C99($BarMin))
+			$MaxAbs:=$BarMax
+		Else 
+			$MaxAbs:=Abs:C99($BarMin)
+		End if 
+		
+		If ($MaxAbs#0)
+			$nbChar:=Int:C8(Log:C22($MaxAbs)/Log:C22(10))+2
+		Else 
+			$nbChar:=2
+		End if 
+		
+		$val:=$BarMin
+		$nbChar:=0
+		Repeat 
+			$nb:=Length:C16(String:C10($val))
+			If ($nb>$nbChar)
+				$nbChar:=$nb
+			End if 
+			$val:=$val+$yStep
+		Until ($val>$BarMax)
+		
+		$LeftLabelsWidth:=$nbChar*$LabelsFontWidth
+		
+		$LeftLabelsVshift:=$fontHeight/2
+		
+		$graphX1:=$leftMargin+$LeftLabelsWidth+$InterMarginX
+		$graphY1:=$topMargin
+		
+		$graphX2:=$graphX1+$graphWidth
+		$graphY2:=$topMargin+$graphDefaultHeight
+		
+		$yScale:=$graphDefaultHeight/($BarMax-$BarMin)
+		$yStepScaled:=Round:C94($yStep*$yScale;2)
+		
+		$yZeroAxis:=Round:C94($graphY1+($BarMax*$yScale);2)
+		$drawLabels:=True:C214
+		
+	Else   //PIE GRAPH 
+		
+		$graphWidth:=$graphDefaultWidth
+		$graphHeight:=$graphDefaultHeight
+		
+		$graphX1:=$leftMargin
+		$graphY1:=$topMargin
+		
+		$graphX2:=$graphX1+$graphWidth
+		$graphY2:=$topMargin+$graphHeight
+		
+		$xGrid:=False:C215
+		$yGrid:=False:C215
+		$drawY0axis:=False:C215
+		$drawLabels:=False:C215
+		
+		$LeftLabelsWidth:=0
+		$BottomLabelsHeight:=0
+		
+		$InterMarginY:=0
+		
+	End if 
+	
+End if 
+
+  // Calculation of the legend width
+
+If ($displayLegend)
+	$nbChar:=0
+	
+	If ($graphType#7)
+		$nbLoops:=$nbSeries
+	Else 
+		$nbLoops:=$nbValues
+	End if 
+	
+	For ($serie;1;$nbLoops)
+		$n:=Length:C16($legendLabels{$serie})
+		If ($n>$nbChar)
+			$nbChar:=$n
+		End if 
+	End for 
+	
+	$LegendWidth:=(3*$LegendlInternalMarginH)+$LegendBulletWidth+(($nbChar+2)*$LabelsFontWidth)
+	$LegendHeight:=($nbLoops*$LegendBulletHeight)+(($nbLoops+1)*$LegendBulletGap)
+	
+Else 
+	$LegendWidth:=0
+	$LegendHeight:=0
+End if 
+
+  // Calculation of the ViewBox
+If ($displayLegend)
+	$ViewBox:="0 0 "+String:C10($leftMargin+$LeftLabelsWidth+$InterMarginX+$graphWidth+$InterMarginX+$LegendWidth+$rightMargin;"&xml")+" "+String:C10($topMargin+$graphDefaultHeight+$InterMarginY+$BottomLabelsHeight+$bottomMargin;"&xml")
+Else 
+	$ViewBox:="0 0 "+String:C10($leftMargin+$LeftLabelsWidth+$InterMarginX+$graphWidth+$rightMargin;"&xml")+" "+String:C10($topMargin+$graphDefaultHeight+$InterMarginY+$BottomLabelsHeight+$bottomMargin;"&xml")
+End if 
+
+-->
+
+
+
+
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:exsl4D="http://www.4D.com" xmlns:gFunc="http://gFunc" xmlns:math="http://exslt.org/math" xmlns:xlink="http://www.w3.org/1999/xlink" id="ID_svg" viewBox= "$4DEVAL($ViewBox)" viewport-fill="$4DTEXT($documentBackgroundColor)" viewport-fill-opacity="$4Deval($documentbackgroundOpacity)">
+
+
+	<!--gradient styles-->
+	<defs>
+		<filter id="soft_blur">
+			<feGaussianBlur in="SourceGraphic" result="BlurAlpha" stdDeviation="1"/>
+		</filter>
+		<filter id="pastel">
+			<feGaussianBlur in="SourceAlpha" result="blur" stdDeviation="2"/>
+			<feOffset dx="6" dy="6" in="blur" result="offsetBlur"/>
+			<feComposite in="SourceGraphic" in2="offsetBlur" operator="in" result="specOut"/>
+		</filter>
+		<filter id="blur_shadow">
+			<feGaussianBlur in="SourceAlpha" result="blur" stdDeviation="3"/>
+			<feOffset dx="4" dy="2" in="blur" result="offsetBlur"/>
+			<feBlend in="SourceGraphic" in2="offsetBlur" mode="normal"/>
+		</filter>
+		<filter filterUnits="objectBoundingBox" id="Shadow">
+			<feGaussianBlur in="SourceAlpha" result="flou" stdDeviation="0"/>
+			<feColorMatrix in="SourceAlpha" result="flouBlue" type="matrix" values=" 0 0 0 0 0                      0 0 0 0 0                     0 0 0 0 0                      0 0 0 0.3 0"/>
+			<feOffset dx="4" dy="4" in="flouBlue" result="flouDecalage"/>
+			<feBlend in="SourceGraphic" in2="flouDecalage" mode="normal"/>
+		</filter>
+		<filter filterUnits="objectBoundingBox" height="100%" id="SaturateMinus" width="100%" x="0%" y="0%">
+			<feColorMatrix in="SourceGraphic" type="saturate" values="0.5"/>
+		</filter>
+		<filter filterUnits="objectBoundingBox" height="100%" id="SaturatePlus" width="100%" x="0%" y="0%">
+			<feColorMatrix in="SourceGraphic" type="saturate" values="1.4"/>
+		</filter>
+		<linearGradient id="BlackGradient">
+			<stop offset="0%" style="stop-color:rgb(0,0,0); stop-opacity:0"/>
+			<stop offset="100%" style="stop-color:rgb(0,0,0); stop-opacity:0.1"/>
+		</linearGradient>
+		<linearGradient id="WhiteGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+			<stop offset="0%" style="stop-color:rgb(255,255,255); stop-opacity:0.3"/>
+			<stop offset="100%" style="stop-color:rgb(255,255,255);stop-opacity:0"/>
+		</linearGradient>
+		<linearGradient id="WhiteBlackGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+			<stop offset="0%" style="stop-color:rgb(255,255,255); stop-opacity:0.15"/>
+			<stop offset="100%" style="stop-color:rgb(0,0,0);stop-opacity:0.15"/>
+		</linearGradient>
+		<linearGradient id="Black0Black1Gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+			<stop offset="0%" style="stop-color:rgb(0,0,0); stop-opacity:0"/>
+			<stop offset="100%" style="stop-color:rgb(0,0,0);stop-opacity:0.05"/>
+		</linearGradient>
+		<!--#4DIF ($graphType=8)-->
+			<!--#4DCODE
+			C_BLOB:C604($blobSvg)
+			C_TEXT:C284($base64)
+			C_TEXT:C284($Path)
+			C_TEXT:C284($uri)
+			ARRAY TEXT:C222($_docList;0)
+			
+			$path:=Get 4D folder:C485(Current resources folder:K5:16;*)+"GraphTemplates"+Folder separator:K24:12+"Graph_8_Pictures"+Folder separator:K24:12
+			If (Not:C34(Test path name:C476($path)=Is a folder:K24:2))
+				$path:=Get 4D folder:C485(-1)+"GraphTemplates"+Folder separator:K24:12+"Graph_8_Pictures"+Folder separator:K24:12
+			End if 
+
+			DOCUMENT LIST:C474($path;$_docList;Absolute path:K24:14+Ignore invisible:K24:16+Posix path:K24:15)
+
+			$svg:=""
+			For ($serie;1;$nbSeries)
+				DOCUMENT TO BLOB:C525(Convert path POSIX to system:C1107($_docList{$serie});$blobSvg)
+				BASE64 ENCODE:C895($blobSvg;$base64)
+				$uri:="data:image/svg+xml;base64,"+$base64
+				$svg:=$svg+"<image id='pictG8_"+String:C10($serie)+"' filter='none' preserveAspectRatio='none' height='100' width='100' xlink:href='"+$uri+"'/>"+Char:C90(Line feed:K15:40)
+			End for 
+			-->
+			<!--4DHTML $svg-->
+		<!--#4DENDIF-->
+						
+	</defs>
+
+	<!--global stroke and font styles-->
+	<g id="ID_globals" style="fill:$4DTEXT($fontColor);stroke:none;font-family:Arial;font-size:$4DEVAL($fontHeight)px;font-weight:normal;font-style:normal;text-decoration:none;shape-rendering:crispEdges">
+		<!--draw title-->
+
+		<!--********************************draw graph background********************************-->
+		
+		<rect fill="$4DTEXT($graphBackgroundShadowColor)" opacity="$4DEVAL($graphBackgroundOpacity)"  id="ID_background_shadow" rx="10" ry="10" stroke="none" visibility="visible" x="$4DEVAL($graphX1)" y="$4DEVAL($graphY1)" width="$4DEVAL($graphWidth)" height="$4DEVAL($graphDefaultHeight)" transform="translate(1,1)"/>
+
+		<g fill="$4DTEXT($graphBackgroundColor)" stroke="none" id="ID_background" visibility="visible" opacity="$4DEVAL($graphBackgroundOpacity)">
+			<rect x="$4DEVAL($graphX1)" y="$4DEVAL($graphY1)" width="$4DEVAL($graphWidth)" height="$4DEVAL($graphDefaultHeight)" rx="10" ry="10" stroke="none"/>
+			<rect x="$4DEVAL($graphX1)" y="$4DEVAL($graphY1)" width="$4DEVAL($graphWidth)" height="$4DEVAL($graphDefaultHeight)" rx="10" ry="10" stroke="none" fill="url(#Black0Black1Gradient)"/>
+		</g>
+		<clipPath id="ID_backgroundClipPath">
+			<rect x="$4DEVAL($graphX1-1)" y="$4DEVAL($graphY1-1)" width="$4DEVAL($graphWidth+1)" height="$4DEVAL($graphDefaultHeight+1)" rx="10" ry="10"/>
+		</clipPath>
+
+		$4DEVAL($nbLoop:=(($BarMax-$BarMin)/$yStep))
+		
+		<!--#4DIF ($drawLabels)-->
+
+			<!--********************************draw Y Labels********************************-->
+			<g id="ID_y_values" style="fill:$4DTEXT($fontColor);stroke:none;font-family:Arial;font-size:$4DEVAL($fontHeight)px;font-weight:normal;font-style:normal;text-decoration:none;filter:none" visibility="visible">
+				$4DEVAL($i:=1)<!--#4DLOOP ($i<=($nbLoop+1))-->
+				<text text-anchor="end" x="$4DEVAL($leftMargin+$LeftLabelsWidth)" y="$4DEVAL($graphY1+(($i-1)*$yStepScaled)+$LeftLabelsVshift)">$4DTEXT($BarMax-(($i-1)*$yStep))</text>
+				$4DEVAL($i:=$i+1)<!--#4DENDLOOP-->
+			</g>
+
+			<!--********************************draw X Labels********************************-->
+			<!--draw axis x labels-->
+			<g id="ID_x_values" style="fill:$4DTEXT($fontColor);stroke:none;font-family:Arial;font-size:$4DEVAL($fontHeight)px;font-weight:normal;font-style:normal;text-decoration:none;filter:none" visibility="visible">
+				<!--#4DIF ($xProp)-->
+
+					$4DEVAL($value:=1)<!--#4DLOOP ($value <=($nbSteps+1))-->			
+						$4DEVAL($x:=$graphX1+(($value-1)*$blockWidth))
+						$4DEVAL($labelX:=$_xAxisCalculatedLabels{$value})
+						$4DEVAL($y:=$graphY2+$InterMarginY+$BottomLabelsHeight)
+						<text text-anchor="middle" x="$4DEVAL($x)" y="$4DEVAL($y)">$4DTEXT($labelX)</text>
+					$4DEVAL($value:=$value+1)<!--#4DENDLOOP-->				
+
+				<!--#4DELSE-->
+
+					$4DEVAL($value:=1)<!--#4DLOOP ($value <=$nbValues)-->			
+						<!--#4DIF $graphType = 5-->
+							$4DEVAL($x:=$graphX1+($blockWidth*($value-1)))
+						<!--#4DELSE-->
+							$4DEVAL($x:=$graphX1+($blockWidth*($value-1))+($blockWidth/2))
+						<!--#4DENDIF-->
+						$4DEVAL($y:=$graphY2+$InterMarginY+$BottomLabelsHeight)
+
+						<text text-anchor="middle" x="$4DEVAL($x)" y="$4DEVAL($y)">$4DTEXT($xAxisLabelsPtr->{$value})</text>
+					$4DEVAL($value:=$value+1)<!--#4DENDLOOP-->
+
+				<!--#4DENDIF-->
+			</g>
+
+		<!--#4DENDIF-->
+
+		<g style="clip-path: url(#ID_backgroundClipPath)">	
+
+			<!--******************************** draw Y grid lines******************************** (Horizontal lines)-->
+
+			<!--#4DIF ($yGrid)-->
+				<g id="ID_y_grid" stroke="#a8a8a8" stroke-width="1">
+					$4DEVAL($i:=1)
+					<!--#4DLOOP ($i<$nbLoop)-->
+						<line x1="$4DEVAL($graphX1)" x2="$4DEVAL($graphX2)" y1="$4DEVAL($graphY1+($i*$yStepScaled))" y2="$4DEVAL($graphY1+($i*$yStepScaled))"/>
+					$4DEVAL($i:=$i+1)
+					<!--#4DENDLOOP-->
+				</g>
+
+				<!--draw Y grid lines SHADOWS-->
+				<g id="ID_y_grid_shadow" stroke="#ffffff" stroke-width="1">
+					$4DEVAL($i:=1)
+					<!--#4DLOOP ($i<$nbLoop)-->
+						<line x1="$4DEVAL($graphX1)" x2="$4DEVAL($graphX2)" y1="$4DEVAL($graphY1+($i*$yStepScaled))" y2="$4DEVAL($graphY1+($i*$yStepScaled))" transform="translate(0,1)"/>
+					$4DEVAL($i:=$i+1)
+					<!--#4DENDLOOP-->
+				</g>	
+			<!--#4DENDIF-->
+
+			<!--#4DIF $drawY0axis-->
+				<g id="ID_y0_axis" stroke="rgb(100,100,100)" stroke-width="1" visibility="visible">
+					<line x1="$4DEVAL($graphX1)" x2="$4DEVAL($graphX2)" y1="$4DEVAL($yZeroAxis)" y2="$4DEVAL($yZeroAxis)"/>
+				</g>
+			<!--#4DENDIF-->
+
+			<!--********************************draw X grid lines******************************** (Vertical lines)-->
+
+			<!--#4DIF($xGrid)-->
+
+				<!--#4DIF ($xProp)-->
+
+				<g id="ID_x_grid" stroke="#a8a8a8" stroke-width="1">
+					$4DEVAL($value:=1)<!--#4DLOOP ($value <$nbSteps)-->
+						$4DEVAL($x:=$graphX1+($blockWidth*$value))	
+						<line x1="$4DEVAL($x)" x2="$4DEVAL($x)" y1="$4DEVAL($graphY1)" y2="$4DEVAL($graphY2)"/>
+					$4DEVAL($value:=$value+1)<!--#4DENDLOOP-->
+				</g>
+				<!--draw X grid lines SHADOWS -->
+				<g id="ID_x_grid_shadow" stroke="#ffffff" stroke-width="1">
+					$4DEVAL($value:=1)<!--#4DLOOP ($value <$nbSteps)-->
+						$4DEVAL($x:=$graphX1+($blockWidth*$value))
+						<line x1="$4DEVAL($x)" x2="$4DEVAL($x)" y1="$4DEVAL($graphY1)" y2="$4DEVAL($graphY2)" transform="translate(1,0)"/>
+					$4DEVAL($value:=$value+1)<!--#4DENDLOOP-->
+				</g>
+
+				<!--#4DELSE-->
+
+				<g id="ID_x_grid" stroke="#a8a8a8" stroke-width="1">
+					$4DEVAL($value:=1)<!--#4DLOOP ($value <=$nbValues)-->
+						$4DEVAL($x:=$graphX1+($blockWidth*$value))	
+						<line x1="$4DEVAL($x)" x2="$4DEVAL($x)" y1="$4DEVAL($graphY1)" y2="$4DEVAL($graphY2)"/>
+					$4DEVAL($value:=$value+1)<!--#4DENDLOOP-->
+				</g>
+				<!--draw X grid lines SHADOWS -->
+				<g id="ID_x_grid_shadow" stroke="#ffffff" stroke-width="1">
+					$4DEVAL($value:=1)<!--#4DLOOP ($value <=$nbValues)-->
+						$4DEVAL($x:=$graphX1+($blockWidth*$value))
+						<line x1="$4DEVAL($x)" x2="$4DEVAL($x)" y1="$4DEVAL($graphY1)" y2="$4DEVAL($graphY2)" transform="translate(1,0)"/>
+					$4DEVAL($value:=$value+1)<!--#4DENDLOOP-->
+				</g>
+
+				<!--#4DENDIF-->	
+
+			<!--#4DENDIF-->
+
+		</g>
+
+		<!--******************************** draw legend ***********************************-->
+		<!--#4DCODE
+			$transform:="translate("+String:C10($GraphX2+$InterMarginX;"&xml")+","+String:C10($TopMargin;"&xml")+")"
+		-->	
+		<!--#4DIF $displayLegend-->
+
+			<g filter="none" id="ID_legend" visibility="visible" transform="$4DEVAL($transform)">
+
+				<!--draw legend border-->
+				
+				<rect fill="$4DTEXT($graphBackgroundShadowColor)" fill-opacity="$4DEVAL($graphBackgroundOpacity)"  id="ID_legend_border_shadow" rx="10" ry="10" stroke="none" x="0" y="0" width="$4DEVAL($LegendWidth)" height="$4DEVAL($LegendHeight)" transform="translate(1,1)"/>
+				<rect fill="$4DTEXT($graphBackgroundColor)" fill-opacity="$4DEVAL($graphBackgroundOpacity)"  id="ID_legend_border" rx="10" ry="10" stroke="none" stroke-width="0" x="0" y="0" width="$4DEVAL($LegendWidth)" height="$4DEVAL($LegendHeight)"/>
+
+				<!--#4DIF $graphType # 7-->
+					$4DEVAL($nbLoops:=$nbSeries)
+				<!--#4DELSE-->
+					$4DEVAL($nbLoops:=$nbValues)
+				<!--#4DENDIF-->
+
+				<!--draw legend bullets-->
+				<g id="ID_legend_bullets" stroke="none">
+					$4DEVAL($serie:=1)<!--#4DLOOP ($serie<=$nbLoops)-->
+
+					<!--#4DIF ($graphType # 8)-->
+						<g fill="$4DTEXT($barColors{$serie})" id="ID_legend_$4DEVAL($serie)">
+							<rect x="$4DEVAL($LegendlInternalMarginH)" y="$4DEVAL($LegendBulletGap+(($LegendBulletHeight+$LegendBulletGap)*($serie-1)))" height="$4DEVAL($LegendBulletHeight)" rx="3" ry="3" width="$4DEVAL($LegendBulletWidth)"/>
+							<rect x="$4DEVAL($LegendlInternalMarginH)" y="$4DEVAL($LegendBulletGap+(($LegendBulletHeight+$LegendBulletGap)*($serie-1)))" height="$4DEVAL($LegendBulletHeight)" rx="3" ry="3" width="$4DEVAL($LegendBulletWidth)" fill="url(#WhiteBlackGradient)"/>
+							<rect x="$4DEVAL($LegendlInternalMarginH)" y="$4DEVAL($LegendBulletGap+(($LegendBulletHeight+$LegendBulletGap)*($serie-1)))" height="$4DEVAL($LegendBulletHeight)" rx="3" ry="3" width="$4DEVAL($LegendBulletWidth)" fill-opacity="0.3" filter="url(#SaturateMinus)"/>
+						</g>
+					<!--#4DELSE-->
+					
+						<!--#4DCODE
+						$svg:="<g  id='ID_legend_"+String:C10($serie)+"'>"
+						$x:=$LegendlInternalMarginH
+						$y:=$LegendBulletGap+(($LegendBulletHeight+$LegendBulletGap)*($serie-1))
+
+						If ($LegendBulletWidth>$LegendBulletHeight)
+
+							$ratioX:=$LegendBulletHeight/100
+							$ratioY:=$LegendBulletWidth/100
+
+							$scale:="scale("+String:C10($ratioX;"&xml")+","+String:C10($ratioY;"&xml")+")"
+
+							$svg:=$svg+"<g transform='translate("+String:C10($x+$LegendBulletWidth;"&xml")+","+String:C10($y;"&xml")+")'>"
+							$svg:=$svg+"<g transform='rotate(90)'>"
+							$svg:=$svg+"<use transform='"+$scale+"' xlink:href='#pictG8_"+String:C10($serie)+"'/>"
+							$svg:=$svg+"</g>"
+							$svg:=$svg+"</g>"
+							$svg:=$svg+"</g>"
+
+						Else 
+
+							$ratioX:=$LegendBulletWidth/100
+							$ratioY:=$LegendBulletHeight/100
+
+							$scale:="scale("+String:C10($ratioX;"&xml")+","+String:C10($ratioY;"&xml")+")"
+
+							$svg:=$svg+"<g transform='translate("+String:C10($x;"&xml")+","+String:C10($y;"&xml")+")'>"
+							$svg:=$svg+"<use transform='"+$scale+"' xlink:href='#pictG8_"+String:C10($serie)+"'/>"
+
+							$svg:=$svg+"</g>"
+							$svg:=$svg+"</g>"
+
+						End if 
+						-->
+						$4DEVAL($svg)
+					<!--#4DENDIF-->
+					
+					$4DEVAL($serie:=$serie+1)<!--#4DENDLOOP-->
+				</g>
+
+				<!--draw legend labels-->
+				<g id="ID_legend_labels" style="fill:$4DTEXT($legendFontColor);stroke:none;font-family:Arial;$4DEVAL($fontSize);font-weight:normal;font-style:normal;text-decoration:none;filter:none;text-anchor:start">
+					$4DEVAL($serie:=1)<!--#4DLOOP ($serie<=$nbLoops)-->
+						<text x="$4DEVAL($LegendlInternalMarginH+$LegendBulletWidth+$LegendlInternalMarginH)" y="$4DEVAL((($LegendBulletHeight+$LegendBulletGap)*$serie)-3)">$4DTEXT($legendLabels{$serie})</text>
+					$4DEVAL($serie:=$serie+1)<!--#4DENDLOOP-->
+				</g>
+					
+			</g>
+
+		<!--#4DENDIF-->

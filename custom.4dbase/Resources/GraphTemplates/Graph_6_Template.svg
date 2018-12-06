@@ -1,0 +1,38 @@
+﻿	<!--#4DCODE
+	$svg:="<g style='clip-path: url(#ID_backgroundClipPath)'>"
+	$svgCircle:="<circle cx='0' cy='0' r='"+String:C10($BulletRadius;"&xml")+"'"
+	For ($serie;1;$NbSeries)
+
+	$svg:=$svg+"<g fill='"+$barColors{$serie}+"' filter='None' id='ID_graph_"+String:C10($serie)+"' opacity='1' stroke='none' stroke-opacity='1' stroke-width='0'>"
+
+
+	For ($value;1;$NbValues)
+
+	If ($xProp)
+	$TranslateX:=$GraphX1+$_xAxisPropPositions{$value}
+	Else 
+	$TranslateX:=$GraphX1+(($value-1)*$blockWidth)+($blockWidth/2)
+	End if 
+
+	$TranslateY:=Round:C94($yZeroAxis-($yValuesArrPtr{$serie}->{$value}*$yScale);2)
+	$Translate:="translate("+String:C10($TranslateX;"&xml")+","+String:C10($TranslateY;"&xml")+")"
+
+	$svg:=$svg+"<g transform='"+$Translate+"'>"
+	$svg:=$svg+$svgCircle+" fill-opacity='1'/>"
+	$svg:=$svg+$svgCircle+" fill='url(#WhiteGradient)'/>"
+	$svg:=$svg+$svgCircle+" fill-opacity='0.4' filter='url(#SaturateMinus)'/>"
+	$svg:=$svg+$svgCircle+" fill='url(#BlackGradient)'/>"
+	$svg:=$svg+"</g>"
+
+	End for 
+	$svg:=$svg+"</g>"
+	End for 
+
+	$svg:=$svg+"</g>"  //END CLIPPATH
+	$svg:=Replace string:C233($svg;"4DEVAL";"xxxx")
+	-->
+	
+	<!--4DHTML $svg-->
+	
+	</g>
+</svg>
