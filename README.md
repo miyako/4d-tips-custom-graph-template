@@ -45,9 +45,7 @@ If ($usePHT)
 	$template:=$template+Document to text($templatePath;"utf-8")
 	
 	PROCESS 4D TAGS($template;$template;$graphValues;$graphParameters)
-	
-	TEXT TO DOCUMENT(System folder(Desktop)+"test.xml";$template)
-	
+		
 	$dom:=DOM Parse XML variable($template)
 	SVG EXPORT TO PICTURE($dom;$graph;Own XML data source)
 	
