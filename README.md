@@ -3,7 +3,7 @@ GRAPHコマンドのカスタマイズ
 
 8個を超える値を円グラフに出力する例
 
-![2018-12-06 16 25 03](https://user-images.githubusercontent.com/1725068/49568361-26f65300-f974-11e8-84c9-4a66d8806f49.png)
+![2018-12-06 17 35 24](https://user-images.githubusercontent.com/1725068/49571747-71300200-f97d-11e8-8c4a-0e395546618f.png)
 
 ```
 $usePHT:=True  //PROCESS 4D TAGS
